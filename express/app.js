@@ -30,7 +30,7 @@ app.use(express.cookieParser(SITE_SECRET));
 app.use(express.session({
       key: 'express.sid',
       store: sessionStore,
-//      secret: SITE_SECRET
+      secret: SITE_SECRET
 }));
 
 app.use(app.router);

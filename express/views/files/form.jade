@@ -1,0 +1,6 @@
+extends ../layout
+
+block content
+  form(enctype="multipart/form-data", action="/files", method="post")
+    input(type="file", name="file")
+    input(type="submit", name="upload")

@@ -1,0 +1,49 @@
+extends layout
+
+block content
+  script(type="text/javascript").
+    require(['dojo/parser', 'dojo/ready',
+             '/socket.io/socket.io.js',
+             'dojo/query',
+             'dojo/dom-construct',
+             'dojo/dom',
+             'dijit/registry'], function(parser, ready, io, q, construct, dom, registry){
+      ready(function(){
+        parser.parse().then(function (){
+                registry.byId('send').on('click', function (){
+                    socket.emit('message:post', {'message': registry.byId('message').get('value')});
+                });
+
+                socket = io.connect();
+                socket.on('connect', function (){
+                    dom.byId('status').innerHTML = "has been established";
+                    socket.emit('messages');
+                });
+
+                socket.on('messages', function(messages){
+                  console.log(q('#messages p'));
+                  q('#messages p').forEach(function (node){
+                    node.remove();
+                  });
+
+                  for (m in messages) {
+                    construct.create('p', {innerHTML: "["+messages[m].createdAt+"] "+messages[m].message}, dom.byId('messages'));
+                  }
+                });
+
+                socket.on('disconnect', function (){
+                    dom.byId('status').innerHTML = "has broken";
+                });
+            });
+        });
+    });
+  h1= title
+  p Welcome to #{title}
+  br
+  div Connection&nbsp;
+    span#status is not established
+  br
+  h3 Chat Messages
+  input#message(data-dojo-type="dijit/form/TextBox")
+  button#send(data-dojo-type="dijit/form/Button", data-dojo-props='label: "Send"');
+  div(id="messages")
